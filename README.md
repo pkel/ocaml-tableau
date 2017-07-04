@@ -6,10 +6,12 @@ First-order free variable tableau prover
 * ☑ Propositional w/o quantifier
 * ☑ Atomic closure on the fly
 * ☑ Heuristic
-* ☐ Non-atomic closure
 * ☐ Quantifier
 * ☐ First-order formula representation
 * ☐ Free variable tableau representation
-* ☐ Mgu closure
+* ☐ MGU literal closure
 * ☐ Printer
 * ☐ Parser or infix notation
+* ☐ Non-atomic closure. Delayed, since only atomic closure defined on
+  slides. MGU only applied to literals.
+
