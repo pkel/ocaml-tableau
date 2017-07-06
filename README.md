@@ -6,9 +6,10 @@ First-order free variable tableau prover
 * ☑ Propositional w/o quantifier
 * ☑ Atomic closure on the fly
 * ☑ Heuristic
-* ☐ Quantifier
+* ☑ Quantifier (Parts. Rest not needed for f.o. f.v. tableau)
 * ☐ First-order formula representation
 * ☐ Free variable tableau representation
+* ☐ Skolem introduction for delta rule
 * ☐ MGU literal closure
 * ☐ Printer
 * ☐ Parser or infix notation
