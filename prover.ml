@@ -1,42 +1,5 @@
-module Formula =
-  struct
-    type variable = int
-
-    type t =
-      | Var   of variable
-      | Neg   of t
-      | And   of t * t
-      | Or    of t * t
-      | Impl  of t * t
-      (* quantifier *)
-      | Exist of variable * t
-      | All   of variable * t
-
-    (* variable *)
-    let var_count = ref 0
-
-    let fresh_var () =
-      var_count := !var_count + 1;
-      Var !var_count
-
-    (* quantifier instanciation *)
-    let instance variable term formula =
-      let rec r = function
-        (* instanciate *)
-        | Var    x     -> if x = variable then term else Var x
-        (* recurse *)
-        | Neg    f     -> r f
-        | And   (a, b) -> And  (r a, r b)
-        | Or    (a, b) -> Or   (r a, r b)
-        | Impl  (a, b) -> Impl (r a, r b)
-        (* don't replace bound variables *)
-        | Exist (x, f) -> if x = variable then Exist (x, f) else Exist (x, r f)
-        | All   (x, f) -> if x = variable then All   (x, f) else All   (x, r f)
-      in
-      r formula
-      end
-
 type formula = Formula.t
+type variable = Formula.var
 
 open Formula
 
@@ -194,16 +157,4 @@ let tableau formula =
   in
   expand [ [], singleton (Neg formula) ]
 
-
-(* example formulas *)
-let x = fresh_var ()
-
-let y = fresh_var ()
-
-let one = Or (And (x,y), Neg (x))
-
-let two =
-  let l = x
-  and r = Or (x, y)
-  in Impl (l, r)
 
