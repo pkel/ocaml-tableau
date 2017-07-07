@@ -4,10 +4,10 @@ type t =
   | Or        of t   * t
   | Implies   of t   * t
   (* quantified variable, formula *)
-  | Exists    of Variable.t * t
-  | ForAll    of Variable.t * t
+  | Exists    of VarSymb.t * t
+  | ForAll    of VarSymb.t * t
   (* predicate, aguments *)
-  | Predicate of Predicate.t * Term.t list
+  | Predicate of PredSymb.t * Term.t list
 
 (* variable instanciation *)
 let instance var term formula =
@@ -25,3 +25,7 @@ let instance var term formula =
         Predicate (p, List.map f args)
   in
   r formula
+
+(* TODO *)
+let free_vars formula =
+  []

@@ -1,6 +1,6 @@
 type t =
-  | Variable of Variable.t
-  | Function of Function.t * t list
+  | Variable of VarSymb.t
+  | Function of FunSymb.t * t list
 
 (* instaciated = instance var with in *)
-val instance : Variable.t -> t -> t -> t
+val instance : VarSymb.t -> t -> t -> t

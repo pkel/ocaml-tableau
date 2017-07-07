@@ -1,4 +1,4 @@
-.PHONY: run run_byte run_native main clean force
+.PHONY: run run_byte run_native main main.byte main.native clean force
 
 run: run_byte
 

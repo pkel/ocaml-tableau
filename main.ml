@@ -4,8 +4,8 @@ open Convenience
 
 (* let x = fresh_var "x" *)
 (* let y = fresh_var "y" *)
-let x = fresh_const "x"
-let y = fresh_const "y"
+let x = fresh_pred_const "x"
+let y = fresh_pred_const "y"
 
 let one = Or (And (x,y), Not (x))
 
