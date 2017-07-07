@@ -1,37 +1,36 @@
-type formula = Formula.t
-type variable = Formula.var
-
 open Formula
 
-type step =
-  | Literal   of formula
-  | DoubleNeg of formula
-  | Alpha     of formula * formula
-  | Beta      of formula * formula
-  | Gamma     of variable * formula
-  | Delta     of variable * formula
+module C = Convenience
 
-type branch  = formula list
+type step =
+  | Literal   of Formula.t
+  | DoubleNeg of Formula.t
+  | Alpha     of Formula.t  * Formula.t
+  | Beta      of Formula.t  * Formula.t
+  | Gamma     of Variable.t * Formula.t
+  | Delta     of Variable.t * Formula.t
+
+type branch  = Formula.t list
 type tableau = branch  list
 
 (* step from formula *)
 let step = function
   (* double negation *)
-  | Neg(Neg(a))       -> DoubleNeg a
+  | Not(Not(a))       -> DoubleNeg a
   (* alpha *)
   | And(a1, a2)       -> Alpha(a1     , a2     )
-  | Neg(Or(a1, a2))   -> Alpha(Neg(a1), Neg(a2))
-  | Neg(Impl(a1, a2)) -> Alpha(a1     , Neg(a2))
+  | Not(Or(a1, a2))   -> Alpha(Not(a1), Not(a2))
+  | Not(Implies(a1, a2)) -> Alpha(a1     , Not(a2))
   (* beta *)
   | Or(b1, b2)        -> Beta(b1     , b2     )
-  | Neg(And(b1, b2))  -> Beta(Neg(b1), Neg(b2))
-  | Impl(b1, b2)      -> Beta(Neg(b1), b2     )
+  | Not(And(b1, b2))  -> Beta(Not(b1), Not(b2))
+  | Implies(b1, b2)      -> Beta(Not(b1), b2     )
   (* gamma *)
-  | All(v, f)         -> Gamma(v, f)
-  | Neg(Exist(v,f))   -> Gamma(v, Neg(f))
+  | ForAll(v, f)         -> Gamma(v, f)
+  | Not(Exists(v,f))   -> Gamma(v, Not(f))
   (* delta *)
-  | Exist(v, f)       -> Delta(v, f)
-  | Neg(All(v,f))     -> Delta(v, Neg(f))
+  | Exists(v, f)       -> Delta(v, f)
+  | Not(ForAll(v,f))     -> Delta(v, Not(f))
   (* not possible *)
   | a                 -> Literal a
 
@@ -49,7 +48,7 @@ let precedence formula =
 module WF =
   struct
     (* precedence * id * formula itself *)
-    type t = int * int * formula
+    type t = int * int * Formula.t
 
     (* mutable counter to index formulas *)
     let count = ref 0
@@ -74,7 +73,7 @@ module WFS = Set.Make(WF)
 (* formula with identifier and precedence *)
 type working_formula = WF.t
 (* literals , (ordered) set of available formulas *)
-type working_branch  = formula list * WFS.t
+type working_branch  = Formula.t list * WFS.t
 type working_tableau = working_branch list
 
 (* top formula from set *)
@@ -110,8 +109,8 @@ let singleton formula =
 (* find unclosable branch *)
 let tableau formula =
   let closure literals = function
-    | Neg lit -> List.exists ((=)      lit ) literals
-    |     lit -> List.exists ((=) (Neg lit)) literals
+    | Not lit -> List.exists ((=)      lit ) literals
+    |     lit -> List.exists ((=) (Not lit)) literals
   in
   let rec expand = function
     (* match unexpanded branches *)
@@ -139,7 +138,7 @@ let tableau formula =
             | Delta(x, f) ->
                 (* fresh variable v, x->v, drop delta *)
                 let b = (literals, drop formulas |>  add (
-                  instance x (fresh_var ()) f
+                  instance x (C.fresh_var "") f
                   )) in
                 expand (b::tl)
             | DoubleNeg a ->
@@ -155,6 +154,6 @@ let tableau formula =
                     let b = (a::literals, drop formulas) in
                     expand (b::tl)
   in
-  expand [ [], singleton (Neg formula) ]
+  expand [ [], singleton (Not formula) ]
 
 

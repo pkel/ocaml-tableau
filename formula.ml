@@ -1,34 +1,27 @@
-type var = int
-
 type t =
-  | Var   of var
-  | Neg   of t
-  | And   of t * t
-  | Or    of t * t
-  | Impl  of t * t
-  (* quantifier *)
-  | Exist of var * t
-  | All   of var * t
+  | Not       of t
+  | And       of t   * t
+  | Or        of t   * t
+  | Implies   of t   * t
+  (* quantified variable, formula *)
+  | Exists    of Variable.t * t
+  | ForAll    of Variable.t * t
+  (* predicate, aguments *)
+  | Predicate of Predicate.t * Term.t list
 
-(* variable *)
-let var_count = ref 0
-
-let fresh_var () =
-  var_count := !var_count + 1;
-  Var !var_count
-
-(* quantifier instanciation *)
+(* variable instanciation *)
 let instance var term formula =
   let rec r = function
-    (* instanciate *)
-    | Var    x     -> if x = var then term else Var x
-    (* recurse *)
-    | Neg    f     -> r f
-    | And   (a, b) -> And  (r a, r b)
-    | Or    (a, b) -> Or   (r a, r b)
-    | Impl  (a, b) -> Impl (r a, r b)
+    | Not      f     -> r f
+    | And     (a, b) -> And     (r a, r b)
+    | Or      (a, b) -> Or      (r a, r b)
+    | Implies (a, b) -> Implies (r a, r b)
     (* don't replace bound variables *)
-    | Exist (x, f) -> if x = var then Exist (x, f) else Exist (x, r f)
-    | All   (x, f) -> if x = var then All   (x, f) else All   (x, r f)
+    | Exists  (x, f) -> if x = var then Exists (x, f) else Exists (x, r f)
+    | ForAll  (x, f) -> if x = var then ForAll (x, f) else ForAll (x, r f)
+    (* predicate argument instanciation *)
+    | Predicate (p, args) ->
+        let f = Term.instance var term in
+        Predicate (p, List.map f args)
   in
   r formula

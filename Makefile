@@ -1,14 +1,25 @@
-.PHONY: run clean force
-run: main
-	./main
+.PHONY: run run_byte run_native main clean force
+
+run: run_byte
+
+run_byte: main.byte
+	./main.byte
+
+run_native: main.native
+	./main.native
 
 clean:
-	rm -f *.cmi *.cmo main
+	rm -rf *.cmi *.cmo main.native main.byte _build
 
 force: clean main
 
-main : formula.cmo prover.cmo main.cmo
-	ocamlc -o $@ $^
+main: main.byte
+
+main.byte:
+	ocamlbuild main.byte
+
+main.native:
+	ocamlbuild main.native
 
 .SECONDARY:
 
