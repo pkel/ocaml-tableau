@@ -10,3 +10,6 @@ let to_string (i, name) =
   match name with
   | "" -> "v" ^ (string_of_int i)
   | s -> s
+
+let compare (i, _) (j,_) =
+  Pervasives.compare i j

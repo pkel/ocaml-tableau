@@ -137,8 +137,8 @@ let tableau formula =
                 expand (b::tl)
             | Delta(x, f) ->
                 (* fresh skolem function sk, x->sk, drop delta *)
-                let args = free_vars formula |> List.map (fun x ->
-                  Term.Variable x)
+                let args = free_vars formula |> VarSet.elements |>
+                  List.map (fun x -> Term.Variable x)
                 in
                 let n = List.length args in
                 let sk = Term.Function (FunSymb.fresh n "", args) in

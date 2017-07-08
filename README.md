@@ -9,7 +9,7 @@ First-order free variable tableau prover
 * ☑ Quantifier (Parts. Rest not needed for f.o. f.v. tableau)
 * ☑ First-order formula representation
 * ☑ Skolem introduction for delta rule
-* ☐ Free variable handling
+* ☑ Free variable handling
 * ☐ MGU literal closure
 * ☐ Printer
 * ☐ Parser or infix notation

@@ -26,6 +26,24 @@ let instance var term formula =
   in
   r formula
 
-(* TODO *)
 let free_vars formula =
-  []
+  let open VarSet in
+  let fv = ref empty in
+  let rec r bound = function
+    | Not      f     -> r bound f;
+    | And     (a, b) -> r bound a; r bound b;
+    | Or      (a, b) -> r bound a; r bound b;
+    | Implies (a, b) -> r bound a; r bound b;
+    (* bind variables *)
+    | Exists  (x, f) -> r (add x bound) f;
+    | ForAll  (x, f) -> r (add x bound) f;
+    (* predicate argument instanciation *)
+    | Predicate (p, args) ->
+        let f arg =
+          let free = Term.free_vars bound arg in
+          fv := union free !fv;
+        in
+        List.iter f args;
+  in
+  r empty formula;
+  !fv

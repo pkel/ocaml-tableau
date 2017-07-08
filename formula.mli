@@ -12,4 +12,4 @@ type t =
 (* instaciated = instance var with in *)
 val instance : VarSymb.t -> Term.t -> t -> t
 
-val free_vars : t -> VarSymb.t list
+val free_vars : t -> VarSet.t

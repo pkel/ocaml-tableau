@@ -2,7 +2,7 @@ type t =
   | Variable of VarSymb.t
   | Function of FunSymb.t * t list
 
-(* instaciated = instance var with in *)
+
 let instance var term within =
   let rec r = function
     (* instanciate *)
@@ -12,3 +12,13 @@ let instance var term within =
   in
   r within
 
+
+let free_vars bound term =
+  let open VarSet in
+  let fv = ref empty in
+  let rec r = function
+    | Variable  x        -> if mem x bound then () else fv := add x !fv;
+    | Function (_, args) -> List.iter r args
+  in
+  r term;
+  !fv
