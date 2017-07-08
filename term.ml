@@ -22,3 +22,43 @@ let free_vars bound term =
   in
   r term;
   !fv
+
+exception SymbolClash
+exception Occurs
+
+let occurs x term =
+  (* TODO: Set is  clear overhead *)
+  free_vars VarSet.empty term |> VarSet.mem x
+
+let unifiable a b =
+  let zip = List.map2 (fun x y -> x,y) in
+  let substitute x term =
+    let f = instance x term in
+    let g (a,b) = f a, f b in
+    List.map g
+  in
+  let rec r = function
+    (* done *)
+    | [] -> true
+    (* unify first pair of terms *)
+    | hd::tl ->
+        match hd with
+        (* unify function by unifying all arguments *)
+        | Function (f, fargs) , Function (g, gargs) ->
+            if FunSymb.compare f g = 0 && FunSymb.arity f = FunSymb.arity g
+            then zip fargs gargs |> List.rev_append tl |> r
+            else raise SymbolClash ;
+        (* unify with variable by substitution *)
+        | Variable x, Variable y ->
+            if VarSymb.compare x y = 0 then r tl
+            else substitute x (Variable y) tl |> r
+        | Variable x, term
+        | term, Variable x ->
+            if occurs x term then raise Occurs
+            else substitute x term tl |> r
+  in
+  try r [a,b] with
+  | SymbolClash
+  | Occurs -> false
+
+
