@@ -10,7 +10,8 @@ First-order free variable tableau prover
 * ☑ First-order formula representation
 * ☑ Skolem introduction for delta rule
 * ☑ Free variable handling
-* ☐ MGU literal closure
+* ☑ MGU literal closure
+* ☐ Test f.o.
 * ☐ Printer
 * ☐ Parser or infix notation
 * ☐ Non-atomic closure. Delayed, since only atomic closure defined on

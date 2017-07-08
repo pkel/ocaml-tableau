@@ -30,7 +30,7 @@ let occurs x term =
   (* TODO: Set is  clear overhead *)
   free_vars VarSet.empty term |> VarSet.mem x
 
-let unifiable a b =
+let unifiable lst =
   let zip = List.map2 (fun x y -> x,y) in
   let substitute x term =
     let f = instance x term in
@@ -57,7 +57,7 @@ let unifiable a b =
             if occurs x term then raise Occurs
             else substitute x term tl |> r
   in
-  try r [a,b] with
+  try r lst with
   | SymbolClash
   | Occurs -> false
 

@@ -106,12 +106,35 @@ let add formula set =
 let singleton formula =
   WFS.empty |> add formula
 
+let closure newlit literals =
+  (* TODO: Keeping literals as list is inefficient *)
+  let candidate =
+    match newlit with
+    | Not (Predicate (p, pargs)) ->
+        ( fun lit -> match lit with
+        | Predicate (q, qargs)      when PredSymb.compare p q = 0 ->
+            Some (pargs, qargs)
+        | _ -> None )
+    |      Predicate (p, pargs)  ->
+        ( fun lit -> match lit with
+        | Not(Predicate (q, qargs)) when PredSymb.compare p q = 0 ->
+            Some (pargs, qargs)
+        | _ -> None )
+    | _ -> raise (Failure "tableau closure: literal expected")
+  in
+  let rec r = function
+    | [] -> false
+    | hd::tl ->
+        match candidate hd with
+        | None                -> r tl
+        | Some (pargs, qargs) ->
+            List.map2 (fun a b -> a,b) pargs qargs |> Term.unifiable || r tl
+  in
+  r literals
+
+
 (* find unclosable branch *)
 let tableau formula =
-  let closure literals = function
-    | Not lit -> List.exists ((=)      lit ) literals
-    |     lit -> List.exists ((=) (Not lit)) literals
-  in
   let rec expand = function
     (* match unexpanded branches *)
     | [] -> None
@@ -150,10 +173,10 @@ let tableau formula =
                 expand (b::tl)
             | Literal a ->
                 (* check whether found literal closes the branch *)
-                match closure literals a with
+                match closure a literals with
                 | true -> expand tl
                 | false ->
-                    (* expand list of literals, go on with branch *)
+                    (* extend list of literals, go on with branch *)
                     let b = (a::literals, drop formulas) in
                     expand (b::tl)
   in
