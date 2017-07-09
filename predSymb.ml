@@ -3,6 +3,7 @@ type t = int * int * string
 let count = ref 0
 
 let fresh arity name =
+  print_endline ("fresh predicate: " ^ name);
   count := !count + 1;
   !count, arity, name
 

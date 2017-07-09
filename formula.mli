@@ -13,3 +13,5 @@ type t =
 val instance : VarSymb.t -> Term.t -> t -> t
 
 val free_vars : t -> VarSet.t
+
+val to_string : t -> string

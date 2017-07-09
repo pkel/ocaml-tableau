@@ -9,6 +9,23 @@ type t =
   (* predicate, aguments *)
   | Predicate of PredSymb.t * Term.t list
 
+let rec to_string = function
+  | Not f -> "¬" ^ to_string f ^ ""
+  | And (a,b) ->
+      "(" ^ to_string a ^ " ∧ " ^ to_string b ^ ")"
+  | Or  (a,b) ->
+      "(" ^ to_string a ^ " ∨ " ^ to_string b ^ ")"
+  | Implies (a,b) ->
+      "(" ^ to_string a ^ " ⇒ " ^ to_string b ^ ")"
+  | Exists (x, f) -> "∃" ^ VarSymb.to_string x ^ "." ^ to_string f
+  | ForAll (x, f) -> "∀" ^ VarSymb.to_string x ^ "." ^ to_string f
+  | Predicate (p, args) ->
+      match List.length args with
+      | 0 -> PredSymb.to_string p
+      | _ ->
+          let a = List.map Term.to_string args |> String.concat ", " in
+          PredSymb.to_string p ^ "(" ^ a ^ ")"
+
 (* variable instanciation *)
 let instance var term formula =
   let rec r = function

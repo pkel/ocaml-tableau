@@ -68,12 +68,22 @@ let closure newlit literals =
         match candidate hd with
         | None                -> r tl
         | Some (pargs, qargs) ->
-            (List.map2 (fun a b -> a,b) pargs qargs |> Term.unifiable) || r tl
+            let closes =
+              List.map2 (fun a b -> a,b) pargs qargs |> Term.unifiable
+            in
+            let () =
+              let open Formula in
+              if closes
+              then print_endline (
+                "Closure: " ^ to_string newlit ^ " with " ^ to_string hd )
+            in
+            closes || r tl
   in
   r literals
 
 
 let add formula t =
+  print_endline ("Add to branch: " ^ Formula.to_string formula);
   let s = step formula in
   match s with
   | Literal l ->

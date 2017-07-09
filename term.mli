@@ -9,3 +9,5 @@ val instance : VarSymb.t -> t -> t -> t
 val free_vars : VarSet.t -> t -> VarSet.t
 
 val unifiable : (t * t) list -> bool
+
+val to_string : t -> string
