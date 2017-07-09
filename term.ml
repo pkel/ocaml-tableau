@@ -39,7 +39,7 @@ let unifiable lst =
   in
   let rec r = function
     (* done *)
-    | [] -> print_endline "Unification: Success"; true
+    | [] -> (* print_endline "Unification: Success"; *) true
     (* unify first pair of terms *)
     | hd::tl ->
         match hd with
@@ -58,7 +58,7 @@ let unifiable lst =
             else substitute x term tl |> r
   in
   try r lst with
-  | SymbolClash -> print_endline "Unification: SymbolClash"; false
-  | Occurs      -> print_endline "Unification: Occurs"     ; false
+  | SymbolClash -> (* print_endline "Unification: SymbolClash"; *) false
+  | Occurs      -> (* print_endline "Unification: Occurs"     ; *) false
 
 
