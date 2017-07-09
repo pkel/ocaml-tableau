@@ -128,13 +128,19 @@ let closure newlit literals =
         match candidate hd with
         | None                -> r tl
         | Some (pargs, qargs) ->
-            List.map2 (fun a b -> a,b) pargs qargs |> Term.unifiable || r tl
+            (List.map2 (fun a b -> a,b) pargs qargs |> Term.unifiable) || r tl
   in
   r literals
 
+exception GammaBoundaryReached of int
 
 (* find unclosable branch *)
-let tableau formula =
+let tableau limit formula =
+  let n = ref limit in
+  let count () =
+    n := !n -1;
+    if !n <= 0 then raise (GammaBoundaryReached limit) else ()
+  in
   let rec expand = function
     (* match unexpanded branches *)
     | [] -> None
@@ -153,6 +159,7 @@ let tableau formula =
                 let r = (literals, drop formulas |> add b2) in
                 expand (l::r::tl)
             | Gamma(x, f) ->
+                count () ;
                 (* fresh variable v, x->v, keep gamma *)
                 let b = (literals, keep formulas |> add (
                   instance x (C.fresh_var "") f
@@ -165,7 +172,7 @@ let tableau formula =
                 in
                 let n = List.length args in
                 let sk = Term.Function (FunSymb.fresh n "", args) in
-                let b = (literals, drop formulas |>  add (instance x sk f)) in
+                let b = (literals, drop formulas |> add (instance x sk f)) in
                 expand (b::tl)
             | DoubleNeg a ->
                 (* drop double neg *)

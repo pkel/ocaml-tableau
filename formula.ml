@@ -12,7 +12,7 @@ type t =
 (* variable instanciation *)
 let instance var term formula =
   let rec r = function
-    | Not      f     -> r f
+    | Not      f     -> Not     (r f)
     | And     (a, b) -> And     (r a, r b)
     | Or      (a, b) -> Or      (r a, r b)
     | Implies (a, b) -> Implies (r a, r b)
