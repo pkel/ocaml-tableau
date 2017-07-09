@@ -10,7 +10,7 @@ val add : Formula.t -> t -> t
 val literals : t -> Formula.t list
 
 (* get next formula on branch according to precedence *)
-val peek: t -> Formula.t option
+val peek: t -> Step.t option
 
 (* keep/drop the peeked formula dependent on formula step *)
 val consume: t -> t

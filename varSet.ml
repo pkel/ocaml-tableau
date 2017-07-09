@@ -7,3 +7,5 @@ let add      = VSet.add
 let union    = VSet.union
 let elements = VSet.elements
 let mem      = VSet.mem
+let remove   = VSet.remove
+

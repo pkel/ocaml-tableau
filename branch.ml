@@ -1,7 +1,7 @@
+open Step
+
 (* assign each step an initial precedence *)
-let precedence formula =
-  let open Step in
-  match step(formula) with
+let precedence = function
   | Literal   _ -> 0
   | DoubleNeg _ -> 1
   | Alpha     _ -> 2
@@ -12,19 +12,19 @@ let precedence formula =
 (* what happens to precedence on usage? *)
 let use (p, id, formula) = (p + 10, id, formula)
 
-(* formula on branch *)
+(* Steps on branch *)
 module F =
   struct
     (* precedence * id * formula itself *)
-    type t = int * int * Formula.t
+    type t = int * int * Step.t
 
     (* mutable counter to index formulas *)
     let count = ref 0
 
     (* new working formula increases counter *)
-    let create formula =
+    let create step =
       count := !count + 1;
-      precedence(formula), !count, formula
+      precedence step, !count, step
 
     (* min_elt on set will gives lowest precedence and lowest id *)
     let compare (p1,i1,_) (p2,i2,_) =
@@ -39,14 +39,13 @@ type state =
   | Closed
   | Open
 
-(* literals and formulas seperated *)
+(* literals and formulas separated *)
 type t =
   { lit  : Formula.t list
   ; fset : S.t
   ; state: state }
 
-
-let closes newlit literals =
+let closure newlit literals =
   (* TODO: Keeping literals as list is inefficient *)
   let candidate =
     let open Formula in
@@ -73,14 +72,16 @@ let closes newlit literals =
   in
   r literals
 
+
 let add formula t =
-  let open Step in
-  match step(formula) with
-  | Literal l -> ( match closes l t.lit with
-      | true  -> { t with lit = l::t.lit; state = Closed }
-      | false -> { t with lit = l::t.lit } )
+  let s = step formula in
+  match s with
+  | Literal l ->
+      if closure l t.lit
+      then { t with lit = l::t.lit; state = Closed }
+      else { t with lit = l::t.lit }
   | _ ->
-      let f = F.create(formula) in
+      let f = F.create(s) in
       { t with fset = S.add f t.fset }
 
 
@@ -99,11 +100,10 @@ let consume t =
   let keep top = S.remove top t.fset |> S.add (use top) in
   let drop top = S.remove top t.fset in
   try
-    let (p, id, f) = S.min_elt t.fset in
-    let open Step in
-    match step(f) with
-    | Gamma _ -> {t with fset = keep (p, id, f)}
-    | _       -> {t with fset = drop (p, id, f)}
+    let (p, id, step) = S.min_elt t.fset in
+    match step with
+    | Gamma _ -> {t with fset = keep (p, id, step)}
+    | _       -> {t with fset = drop (p, id, step)}
   with Not_found -> t
 
 let empty = { lit=[]; fset=S.empty; state=Open }

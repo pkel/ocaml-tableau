@@ -2,8 +2,6 @@ open Formula
 open Step
 open Branch
 
-module C = Convenience
-
 exception GammaBoundaryReached of int
 
 (* find unclosable branch *)
@@ -21,9 +19,10 @@ let tableau limit formula =
         | Closed -> expand tl
         | Open   ->
             match peek hd with
+            (* no steps left, return unclosable branch *)
             | None -> Some hd
-            | Some formula ->
-                match step(formula) with
+            | Some step ->
+                match step with
                 | Alpha(a1,a2) ->
                     (* expand branch, delete source formula *)
                     let b = consume hd |> add a1 |> add a2 in
@@ -36,13 +35,13 @@ let tableau limit formula =
                 | Gamma(x, f) ->
                     count () ;
                     (* fresh variable v, x->v, keep gamma *)
-                    let fresh = C.fresh_var "" in
+                    let fresh = Term.Variable (VarSymb.fresh "") in
                     let b = consume hd |> add (instance x fresh f) in
                     expand (b::tl)
                 | Delta(x, f) ->
                     (* fresh skolem function sk, x->sk, drop delta *)
-                    let args = free_vars formula |> VarSet.elements |>
-                      List.map (fun x -> Term.Variable x)
+                    let args = free_vars f |> VarSet.remove x |>
+                      VarSet.elements |> List.map (fun x -> Term.Variable x)
                     in
                     let n = List.length args in
                     let sk = Term.Function (FunSymb.fresh n "", args) in
