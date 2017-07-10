@@ -12,6 +12,6 @@ First-order free variable tableau prover
 * ☑ Free variable handling
 * ☑ MGU literal closure
 * ☐ More tests on f.o.
-* ☐ Printer
+* ☑ Printer
 * ☐ Parser or infix notation
 
