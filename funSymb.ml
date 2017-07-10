@@ -10,7 +10,7 @@ let to_string (i, _, name) =
 let fresh arity name =
   count := !count + 1;
   let t = !count, arity, name in
-  print_endline ("fresh function: " ^ (to_string t));
+  (* print_endline ("fresh function: " ^ (to_string t)); *)
   t
 
 let arity (_, n, _) = n

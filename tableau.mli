@@ -2,7 +2,7 @@ type state =
   | Working
   | DeadEnd
   | Aborted
-  | Closed
+  | Closed of int
 
 type t
 

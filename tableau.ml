@@ -6,23 +6,24 @@ type state =
   | Working
   | DeadEnd
   | Aborted
-  | Closed
+  | Closed of int
 
 type t =
-  { closed : Branch.t list
-  ; stack  : Branch.t list
-  ; power  : int
-  ; state  : state
+  { closed   : Branch.t list
+  ; stack    : Branch.t list
+  ; power    : int
+  ; consumed : int
+  ; state    : state
   }
 
 let state { state; _ } = state
 
 let to_string { state } =
   match state with
-  | Working -> "Pending Tableau"
-  | DeadEnd -> "Unclosable Tableau"
-  | Aborted -> "Aborted Tableu, too much Gammas"
-  | Closed ->  "Closed Tableu"
+  | Working  -> "Pending Tableau"
+  | DeadEnd  -> "Unclosable Tableau"
+  | Aborted  -> "Aborted Tableu, too much Gammas"
+  | Closed i ->  "Closed Tableu"
 
 let print t =
   print_endline (to_string t ^ ":") ;
@@ -40,7 +41,7 @@ let step t =
     { t with stack = List.map (Branch.apply subst) t.stack }
   in
   match t.stack with
-  | [] -> { t with state = Closed }
+  | [] -> { t with state = Closed t.consumed }
   | hd::tl ->
       let open Branch in
       match peek hd with
@@ -64,7 +65,9 @@ let step t =
                 (* fresh variable v, x->v, keep gamma *)
                 let fresh = Variable (VarSymb.fresh "") in
                 let b = consume hd |> add (instance x fresh f) in
-                { t with stack = b::tl; power = t.power - 1 }
+                { t with stack = b::tl
+                ; power = t.power - 1
+                ; consumed = t.consumed + 1 }
           )
           | Delta(x, f) ->
               (* fresh skolem function sk, x->sk, drop delta *)
@@ -88,7 +91,7 @@ let step t =
 let rec verbose_expand t =
   match t.state with
   | Working -> print t; print_endline "";  step t |> verbose_expand
-  | _ -> print t ; t
+  | _ -> t
 
 let rec expand t =
   match t.state with
@@ -100,5 +103,6 @@ let init power formulas =
   ; closed = []
   ; stack = [Branch.of_list formulas]
   ; power = power
+  ; consumed = 0
   }
 

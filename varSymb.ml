@@ -10,7 +10,7 @@ let to_string (i, name) =
 let fresh name =
   count := !count + 1;
   let t = !count, name in
-  print_endline ("fresh variable: " ^ (to_string t));
+  (* print_endline ("fresh variable: " ^ (to_string t)); *)
   t
 
 let compare (i, _) (j,_) =

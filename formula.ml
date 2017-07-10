@@ -16,7 +16,7 @@ let rec to_string = function
   | Or  (a,b) ->
       "(" ^ to_string a ^ " ∨ " ^ to_string b ^ ")"
   | Implies (a,b) ->
-      "(" ^ to_string a ^ " ⇒ " ^ to_string b ^ ")"
+      "(" ^ to_string a ^ " → " ^ to_string b ^ ")"
   | Exists (x, f) -> "∃" ^ VarSymb.to_string x ^ "." ^ to_string f
   | ForAll (x, f) -> "∀" ^ VarSymb.to_string x ^ "." ^ to_string f
   | Predicate (p, args) ->

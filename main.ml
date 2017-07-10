@@ -38,11 +38,12 @@ let check_ ff power formulas =
   print_endline "" ;
   let tab = init power formulas in
   match ff tab |> state with
-  | Working -> raise (Failure "Program Logic")
-  | DeadEnd -> print_endline  "\nReached dead end."
-  | Aborted -> print_endline ("\nStopped after " ^
-                              string_of_int power ^ " gammas." )
-  | Closed  -> print_endline  "\nTableau closed."
+  | Working  -> raise (Failure "Program Logic")
+  | DeadEnd  -> print_endline  "Reached dead end."
+  | Aborted  -> print_endline ("Stopped after " ^
+                               string_of_int power ^ " gammas." )
+  | Closed i -> print_endline ("Tableau closed after " ^
+                               string_of_int i ^ " gammas." )
 
 let check_verbose =
   check_ verbose_expand
@@ -52,8 +53,7 @@ let check =
 
 let () =
   check_verbose 10 [Not one];
-  check_verbose 10 [Not two];
-  print_endline ""
+  check_verbose 10 [Not two]
 
 (*
  * First Order Exam Exercise
@@ -81,8 +81,7 @@ let foExamExample =
   )))))
 
 let () =
-  check_verbose 100 [Not foExamExample];
-  print_endline ""
+  check_verbose 100 [Not foExamExample]
 
 (*
  * Who killed aunt Agatha?
@@ -168,5 +167,5 @@ let conjecture3 = Not (killed agatha  agatha) (* wrong *)
 
 let () =
   check 100  (Not conjecture1 :: axioms);
-  (* check 1000 (Not conjecture2 :: axioms); *)
-  (* check 1000 (Not conjecture3 :: axioms); *)
+  check 1000 (Not conjecture2 :: axioms);
+  check 1000 (Not conjecture3 :: axioms)
