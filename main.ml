@@ -110,12 +110,14 @@ let x  = Variable x_
 let y_ = VarSymb.fresh "y"
 let y  = Variable y_
 
+
 let conjunction lst =
   let f a b = And(a,b) in
   match lst with
   | [] -> raise (Failure "Can't build empty formula")
   | hd::[] -> hd
   | hd::tl -> List.fold_left f hd tl
+
 
 let triv = Implies (ForAll (x_, lives x), lives agatha)
 
@@ -160,9 +162,9 @@ let axioms =
   *)
   ]
 
-let conjecture1 = Not (killed butler  agatha)
-let conjecture2 = Not (killed charles agatha)
-let conjecture3 = Not (killed agatha  agatha)
+let conjecture1 = Not (killed butler  agatha) (* true *)
+let conjecture2 = Not (killed charles agatha) (* true *)
+let conjecture3 = Not (killed agatha  agatha) (* wrong *)
 
 let () =
   check 100  (Not conjecture1 :: axioms);
