@@ -1,13 +1,7 @@
-type state =
-  | Closed
-  | Open
-
 type t
 
 (* add formula to branch, try to close if literal *)
 val add : Formula.t -> t -> t
-
-val literals : t -> Formula.t list
 
 (* get next formula on branch according to precedence *)
 val peek: t -> Step.t option
@@ -19,5 +13,7 @@ val singleton: Formula.t -> t
 
 val of_list: Formula.t list -> t
 
-val state: t -> state
+(* Some subst = closure newlit branch *)
+val closure: Formula.t -> t -> Substitution.t option
 
+val apply: Substitution.t -> t -> t

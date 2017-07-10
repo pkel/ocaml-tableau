@@ -9,9 +9,6 @@ type t =
   (* predicate, aguments *)
   | Predicate of PredSymb.t * Term.t list
 
-(* instaciated = instance var with in *)
-val instance : VarSymb.t -> Term.t -> t -> t
-
 val free_vars : t -> VarSet.t
 
 val to_string : t -> string

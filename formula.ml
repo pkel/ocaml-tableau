@@ -26,23 +26,6 @@ let rec to_string = function
           let a = List.map Term.to_string args |> String.concat ", " in
           PredSymb.to_string p ^ "(" ^ a ^ ")"
 
-(* variable instanciation *)
-let instance var term formula =
-  let rec r = function
-    | Not      f     -> Not     (r f)
-    | And     (a, b) -> And     (r a, r b)
-    | Or      (a, b) -> Or      (r a, r b)
-    | Implies (a, b) -> Implies (r a, r b)
-    (* don't replace bound variables *)
-    | Exists  (x, f) -> if x = var then Exists (x, f) else Exists (x, r f)
-    | ForAll  (x, f) -> if x = var then ForAll (x, f) else ForAll (x, r f)
-    (* predicate argument instanciation *)
-    | Predicate (p, args) ->
-        let f = Term.instance var term in
-        Predicate (p, List.map f args)
-  in
-  r formula
-
 let free_vars formula =
   let open VarSet in
   let fv = ref empty in

@@ -8,3 +8,5 @@ type t =
 
 (* step from formula *)
 val step : Formula.t -> t
+
+val apply : Substitution.t -> t -> t

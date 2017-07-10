@@ -28,3 +28,15 @@ let step = function
   | Not (ForAll (v,f))    -> Delta (v, Not f )
   (* not possible *)
   | a                     -> Literal   a
+
+let apply subst t =
+  let s = subst in
+  let f = Substitution.apply_formula in
+  match t with
+  | Alpha (a,b) -> Alpha (f s a, f s b)
+  | Beta  (a,b) -> Beta  (f s a, f s b)
+  | Gamma (v,a) -> let s = Substitution.remove v s in Gamma (v, f s a)
+  | Delta (v,a) -> let s = Substitution.remove v s in Delta (v, f s a)
+  | DoubleNeg a -> DoubleNeg (f s a)
+  | Literal   a -> Literal   (f s a)
+
