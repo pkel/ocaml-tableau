@@ -11,7 +11,7 @@ First-order free variable tableau prover
 * ☑ Skolem introduction for delta rule
 * ☑ Free variable handling
 * ☑ MGU literal closure
-* ☐ More tests on f.o.
+* ☑ More tests on f.o.
 * ☑ Printer
 * ☐ Parser or infix notation
 

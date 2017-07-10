@@ -11,7 +11,7 @@ let add = M.add
 let remove = M.remove
 
 let occurs x term =
-  (* TODO: Set is  clear overhead *)
+  (* TODO: Set is clear overhead *)
   Term.free_vars VarSet.empty term |> VarSet.mem x
 
 let apply_var t v =

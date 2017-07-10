@@ -135,7 +135,6 @@ let axioms =
   ; ForAll (x_,
       Implies (hates agatha x, Not(hates charles x)
     ))
-  (* TODO: order of following two decides whether conj1 or conj2 fails *)
   ; hates agatha charles
   ; hates agatha agatha
   ; ForAll (x_,
@@ -162,11 +161,11 @@ let axioms =
   *)
   ]
 
-let conjecture1 = Not (killed butler  agatha) (* true *)
-let conjecture2 = Not (killed charles agatha) (* true *)
-let conjecture3 = Not (killed agatha  agatha) (* wrong *)
+let conjecture1 = Not (killed butler  agatha)
+let conjecture2 = Not (killed charles agatha)
+let conjecture  = And (conjecture1, conjecture2)
 
 let () =
-  check 100  (Not conjecture1 :: axioms);
-  check 100  (Not conjecture2 :: axioms);
-  check 1000 (Not conjecture3 :: axioms)
+  check 100 (Not conjecture1 :: axioms);
+  check 100 (Not conjecture2 :: axioms);
+  check 100 (Not conjecture  :: axioms)

@@ -48,6 +48,14 @@ let set_map f set =
   let open Set in
   elements set |> List.map f |> of_list
 
+(* TODO: get rid *)
+let () = Random.init 42
+let shuffle d =
+    let nd = List.map (fun c -> (Random.bits (), c)) d in
+    let sond = List.sort compare nd in
+    List.map snd sond
+
+
 (* literals and formulas separated *)
 type t =
   { lit  : Formula.t list
@@ -120,7 +128,8 @@ let closure newlit t =
             | None -> r tl
             | x -> x
   in
-  r t.lit
+  (* TODO: think about efficient fair strategy *)
+  r (shuffle t.lit)
 
 
 let apply subst t =
