@@ -1,6 +1,6 @@
 open Term
 open Formula
-open Prover
+open Tableau
 
 (*
  * Helper
@@ -31,16 +31,20 @@ let two =
   and r = Or (x, y)
   in Implies (l, r)
 
-let check f =
+let check power formulas =
   print_endline "";
-  print_endline ("Check: " ^ to_string f);
-  match tableau 10 f with
-  | None -> print_endline "valid."
-  | Some x -> print_endline "invalid."
+  let f = List.map to_string formulas |> String.concat "; " in
+  print_endline ("Tableau: " ^ f);
+  let tab = init power formulas in
+  match expand tab |> state with
+  | Working -> raise (Failure "Program Logic")
+  | DeadEnd -> print_endline "Reached dead end."
+  | Aborted -> print_endline ("Stopped after " ^ string_of_int power ^ " gammas.")
+  | Closed  -> print_endline "Tableau closed."
 
 let () =
-  check one;
-  check two;
+  check 10 [Not one];
+  check 10 [Not two];
   print_endline ""
 
 (*
@@ -69,7 +73,7 @@ let foExamExample =
   )))))
 
 let () =
-  check foExamExample;
+  check 100 [Not foExamExample];
   print_endline ""
 
 (*
@@ -159,4 +163,4 @@ let mini =
 let triv = Implies (lives agatha, lives agatha)
 
 let () =
-  check puz
+  check 100 [Not puz]
