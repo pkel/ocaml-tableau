@@ -49,7 +49,8 @@ let set_map f set =
   elements set |> List.map f |> of_list
 
 (* TODO: get rid *)
-let () = Random.init 42
+let () = Random.self_init ()
+(* let () = Random.init 42 *)
 let shuffle d =
     let nd = List.map (fun c -> (Random.bits (), c)) d in
     let sond = List.sort compare nd in

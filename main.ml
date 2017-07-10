@@ -168,4 +168,4 @@ let conjecture  = And (conjecture1, conjecture2)
 let () =
   check 100 (Not conjecture1 :: axioms);
   check 100 (Not conjecture2 :: axioms);
-  check 100 (Not conjecture  :: axioms)
+  check 300 (Not conjecture  :: axioms)
