@@ -31,21 +31,27 @@ let two =
   and r = Or (x, y)
   in Implies (l, r)
 
-let check power formulas =
+let check_ ff power formulas =
   print_endline "";
   let f = List.map to_string formulas |> String.concat "; " in
   print_endline ("Start Tableau: " ^ f);
   print_endline "" ;
   let tab = init power formulas in
-  match verbose_expand tab |> state with
+  match ff tab |> state with
   | Working -> raise (Failure "Program Logic")
   | DeadEnd -> print_endline "\nReached dead end."
   | Aborted -> print_endline ("\nStopped after " ^ string_of_int power ^ " gammas.")
   | Closed  -> print_endline "\nTableau closed."
 
+let check_verbose =
+  check_ verbose_expand
+
+let check =
+  check_ expand
+
 let () =
-  check 10 [Not one];
-  check 10 [Not two];
+  check_verbose 10 [Not one];
+  check_verbose 10 [Not two];
   print_endline ""
 
 (*
@@ -74,7 +80,7 @@ let foExamExample =
   )))))
 
 let () =
-  check 100 [Not foExamExample];
+  check_verbose 100 [Not foExamExample];
   print_endline ""
 
 (*
@@ -117,51 +123,42 @@ let disjunction lst =
   | hd::[] -> hd
   | hd::tl -> List.fold_left f hd tl
 
-let puz =
-  Implies ( conjunction
-    [ ForAll (x_, ForAll (y_, Implies (killed x y, hates x y)))
-    ; ForAll (x_, ForAll (y_, Implies (killed x y, Not (richer x y))))
-    ; ForAll (x_, Implies (hates agatha x, Not(hates charles x)))
-    ; hates agatha agatha
-    ; hates agatha charles
-    ; ForAll (x_, Implies (Not (richer x agatha), hates butler x))
-    ; ForAll (x_, Implies (hates agatha x, hates butler x))
-    ; ForAll (x_, disjunction
-      [ Not (hates x agatha)
-      ; Not (hates x butler)
-      ; Not (hates x charles) ])
-    (* ], And (Not (killed butler agatha), Not (killed charles agatha)) ) *)
-    ], killed agatha agatha )
-    (* ], killed butler agatha ) *)
-
-let puz =
-  Implies ( conjunction
-    [ Implies (killed x y, hates x y)
-    ; Implies (killed x y, Not (richer x y))
-    ; Implies (hates agatha x, Not(hates charles x))
-    ; hates agatha agatha
-    ; hates agatha charles
-    ; Implies (Not (richer x agatha), hates butler x)
-    ; Implies (hates agatha x, hates butler x)
-    ; disjunction
-      [ Not (hates x agatha)
-      ; Not (hates x butler)
-      ; Not (hates x charles) ]
-    (* ], And (Not (killed butler agatha), Not (killed charles agatha)) ) *)
-    ], killed agatha agatha )
-    (* ], killed butler agatha ) *)
-
-let mini =
-  Implies ( conjunction
-    [ lives agatha
-    ; lives butler
-    ; lives charles
-    ; Exists (x_, And(lives x, killed x agatha))
-    ; Not (killed butler agatha)
-    ; Not (killed charles agatha)
-    ], killed agatha agatha )
-
-let triv = Implies (lives agatha, lives agatha)
+let triv = Implies (ForAll (x_, lives x), lives agatha)
 
 let () =
-  check 100 [Not puz]
+  check_verbose 10 [Not triv]
+
+let axioms =
+  [ ForAll (x_,
+      ForAll (y_,
+        Implies (killed x y, hates x y)
+    ))
+  ; ForAll (x_,
+      ForAll (y_,
+        Implies (killed x y, Not (richer x y))
+    ))
+  ; ForAll (x_,
+      Implies (hates agatha x, Not(hates charles x)
+    ))
+  ; hates agatha agatha
+  ; hates agatha charles
+  ; ForAll (x_,
+      Implies (Not (richer x agatha), hates butler x)
+    )
+  ; ForAll (x_,
+      Implies (hates agatha x, hates butler x)
+    )
+  ; ForAll (x_,
+      disjunction
+        [ Not (hates x agatha)
+        ; Not (hates x butler)
+        ; Not (hates x charles) ]
+    )
+  ]
+
+let conjecture1 = Not (killed butler  agatha)
+let conjecture2 = Not (killed charles agatha)
+
+let () =
+  check 100  (Not conjecture1 :: axioms);
+  check 1000 (Not conjecture2 :: axioms);
