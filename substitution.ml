@@ -47,7 +47,6 @@ exception SymbolClash
 exception Occurs
 
 let unifier lst =
-  print_endline "Unification started";
   let zip = List.map2 (fun x y -> x,y) in
   let substitute x term =
     let s = add x term empty in
@@ -57,7 +56,7 @@ let unifier lst =
   in
   let rec r subst = function
     (* done *)
-    | [] -> print_endline "Unification: Success"; Some subst
+    | [] -> Some subst
     (* unify first pair of terms *)
     | hd::tl ->
         match hd with
@@ -77,7 +76,7 @@ let unifier lst =
             else substitute x term tl |> r (add x term subst)
   in
   try r empty lst with
-  | SymbolClash -> print_endline "Unification: SymbolClash"; None
-  | Occurs      -> print_endline "Unification: Occurs"     ; None
+  | SymbolClash -> None
+  | Occurs      -> None
 
 

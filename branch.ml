@@ -10,13 +10,14 @@ let precedence = function
   | Gamma     _ -> 5
 
 (* what happens to precedence on usage? *)
-let use (p, id, formula) = (p + 10, id, formula)
+let use (p, id, step, formula) = (p + 10, id, step, formula)
 
 (* Steps on branch *)
 module Elt = (* TODO: make this = module Step *)
   struct
     (* precedence * id * formula itself *)
-    type t = int * int * Step.t
+    (* TODO: use record *)
+    type t = int * int * Step.t * Formula.t
 
     (* mutable counter to index formulas *)
     let count = ref 0
@@ -25,19 +26,27 @@ module Elt = (* TODO: make this = module Step *)
     let create formula =
       count := !count + 1;
       let step = step (formula) in
-      precedence step, !count, step
+      precedence step, !count, step, formula
 
-    let apply subst (p, id, step) =
-      (p, id, Step.apply subst step)
+    let apply subst (p, id, step, f) =
+      (p, id, Step.apply subst step, Substitution.apply_formula subst f)
+
+    let to_string (_, _, _, f) = Formula.to_string f
+
+    let step (_, _, s, _) = s
 
     (* min_elt on set will gives lowest precedence and lowest id *)
-    let compare (p1,i1,_) (p2,i2,_) =
+    let compare (p1,i1,_,_) (p2,i2,_,_) =
       match Pervasives.compare p1 p2 with
       | 0 -> Pervasives.compare i1 i2
       | x -> x
   end
 
 module Set = Set.Make(Elt)
+
+let set_map f set =
+  let open Set in
+  elements set |> List.map f |> of_list
 
 (* literals and formulas separated *)
 type t =
@@ -46,13 +55,20 @@ type t =
   }
 
 
+let print t =
+  let lit = List.map Formula.to_string t.lit |> String.concat "; " in
+  let fms = Set.elements t.steps |> List.map Elt.to_string |>
+    String.concat "; "
+  in
+  print_endline ("    " ^ lit ^ " | " ^ fms)
+
+
 let add formula t =
-  print_endline ("Add to branch: " ^ Formula.to_string formula);
   { t with steps = Set.add (Elt.create formula) t.steps }
 
 let peek { steps; _ } =
   try
-    let _, _, s = Set.min_elt steps in
+    let s = Set.min_elt steps |> Elt.step in
     Some s
   with Not_found -> None
 
@@ -62,8 +78,7 @@ let consume t =
   let drop top = Set.remove top t.steps in
   try
     let top = Set.min_elt t.steps in
-    let step (_, _, step) = step in
-    match step top with
+    match Elt.step top with
     | Gamma _   -> {t with steps = keep top}
     | Literal l -> {t with steps = drop top; lit = l::t.lit}
     | _         -> {t with steps = drop top}
@@ -107,10 +122,6 @@ let closure newlit t =
   in
   r t.lit
 
-
-let set_map f set =
-  let open Set in
-  elements set |> List.map f |> of_list
 
 let apply subst t =
   (* TODO: Store substitutions and apply them on peek *)

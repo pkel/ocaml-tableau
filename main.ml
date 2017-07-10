@@ -34,13 +34,14 @@ let two =
 let check power formulas =
   print_endline "";
   let f = List.map to_string formulas |> String.concat "; " in
-  print_endline ("Tableau: " ^ f);
+  print_endline ("Start Tableau: " ^ f);
+  print_endline "" ;
   let tab = init power formulas in
-  match expand tab |> state with
+  match verbose_expand tab |> state with
   | Working -> raise (Failure "Program Logic")
-  | DeadEnd -> print_endline "Reached dead end."
-  | Aborted -> print_endline ("Stopped after " ^ string_of_int power ^ " gammas.")
-  | Closed  -> print_endline "Tableau closed."
+  | DeadEnd -> print_endline "\nReached dead end."
+  | Aborted -> print_endline ("\nStopped after " ^ string_of_int power ^ " gammas.")
+  | Closed  -> print_endline "\nTableau closed."
 
 let () =
   check 10 [Not one];

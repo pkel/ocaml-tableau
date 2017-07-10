@@ -1,5 +1,7 @@
 type t
 
+val print : t -> unit
+
 (* add formula to branch, try to close if literal *)
 val add : Formula.t -> t -> t
 

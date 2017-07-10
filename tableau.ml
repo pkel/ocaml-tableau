@@ -17,6 +17,19 @@ type t =
 
 let state { state; _ } = state
 
+let to_string { state } =
+  match state with
+  | Working -> "Pending Tableau"
+  | DeadEnd -> "Unclosable Tableau"
+  | Aborted -> "Aborted Tableu, too much Gammas"
+  | Closed ->  "Closed Tableu"
+
+let print t =
+  print_endline (to_string t ^ ":") ;
+  print_endline "  Closed branches:" ;
+  List.iter Branch.print t.closed ;
+  print_endline "  Open branches:" ;
+  List.iter Branch.print t.stack
 
 let step t =
   let instance x term =
@@ -66,13 +79,16 @@ let step t =
               let b = consume hd |> add a in
               { t with stack = b::tl }
           | Literal   l ->
-              print_endline "this does not happen";
               let b = consume hd in
               match closure l b with
               | None -> { t with stack = b::tl }
               | Some subst ->
-                  print_endline "Close branch";
                   apply_ subst { t with stack = tl; closed = b::t.closed }
+
+let rec verbose_expand t =
+  match t.state with
+  | Working -> print t; print_endline "";  step t |> verbose_expand
+  | _ -> print t ; t
 
 let rec expand t =
   match t.state with
