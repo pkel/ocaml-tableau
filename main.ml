@@ -39,9 +39,10 @@ let check_ ff power formulas =
   let tab = init power formulas in
   match ff tab |> state with
   | Working -> raise (Failure "Program Logic")
-  | DeadEnd -> print_endline "\nReached dead end."
-  | Aborted -> print_endline ("\nStopped after " ^ string_of_int power ^ " gammas.")
-  | Closed  -> print_endline "\nTableau closed."
+  | DeadEnd -> print_endline  "\nReached dead end."
+  | Aborted -> print_endline ("\nStopped after " ^
+                              string_of_int power ^ " gammas." )
+  | Closed  -> print_endline  "\nTableau closed."
 
 let check_verbose =
   check_ verbose_expand
@@ -116,13 +117,6 @@ let conjunction lst =
   | hd::[] -> hd
   | hd::tl -> List.fold_left f hd tl
 
-let disjunction lst =
-  let f a b = Or(a,b) in
-  match lst with
-  | [] -> raise (Failure "Can't build empty formula")
-  | hd::[] -> hd
-  | hd::tl -> List.fold_left f hd tl
-
 let triv = Implies (ForAll (x_, lives x), lives agatha)
 
 let () =
@@ -145,20 +139,32 @@ let axioms =
   ; ForAll (x_,
       Implies (Not (richer x agatha), hates butler x)
     )
+  (*
+  ; ForAll (x_,
+      Implies (And (lives x, Not (richer x agatha)), hates butler x)
+    )
+  *)
   ; ForAll (x_,
       Implies (hates agatha x, hates butler x)
     )
   ; ForAll (x_,
-      disjunction
-        [ Not (hates x agatha)
-        ; Not (hates x butler)
-        ; Not (hates x charles) ]
+      Not ( conjunction
+        [ hates x agatha
+        ; hates x butler
+        ; hates x charles ] )
     )
+  (*
+  ; lives agatha
+  ; lives butler
+  ; lives charles
+  *)
   ]
 
 let conjecture1 = Not (killed butler  agatha)
 let conjecture2 = Not (killed charles agatha)
+let conjecture3 = Not (killed agatha  agatha)
 
 let () =
   check 100  (Not conjecture1 :: axioms);
-  check 1000 (Not conjecture2 :: axioms);
+  (* check 1000 (Not conjecture2 :: axioms); *)
+  (* check 1000 (Not conjecture3 :: axioms); *)
