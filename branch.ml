@@ -31,7 +31,7 @@ module Elt = (* TODO: make this = module Step *)
     let apply subst (p, id, step, f) =
       (p, id, Step.apply subst step, Substitution.apply_formula subst f)
 
-    let to_string (_, _, _, f) = Formula.to_string f
+    let to_string (_, _, s, _) = Step.to_string s
 
     let step (_, _, s, _) = s
 

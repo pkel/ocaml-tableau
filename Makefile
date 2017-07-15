@@ -1,6 +1,6 @@
 .PHONY: run run_byte run_native main main.byte main.native clean force
 
-run: run_native
+run: run_byte
 
 run_byte: main.byte
 	./main.byte

@@ -6,6 +6,8 @@ type t =
   | Gamma     of VarSymb.t * Formula.t
   | Delta     of VarSymb.t * Formula.t
 
+val to_string : t -> string
+
 (* step from formula *)
 val step : Formula.t -> t
 

@@ -6,6 +6,18 @@ type t =
   | Gamma     of VarSymb.t * Formula.t
   | Delta     of VarSymb.t * Formula.t
 
+
+let to_string t =
+  let module F = Formula in
+  let module V = VarSymb in
+  match t with
+  | Literal   l -> F.to_string l
+  | DoubleNeg f -> "¬¬" ^ F.to_string f
+  | Alpha     (a, b) -> F.to_string a ^ " ∧ " ^ F.to_string b
+  | Beta      (a, b) -> F.to_string a ^ " ∨ " ^ F.to_string b
+  | Gamma     (x, f) -> "∀"  ^ V.to_string x ^ "." ^ F.to_string f
+  | Delta     (x, f) -> "∃"  ^ V.to_string x ^ "." ^ F.to_string f
+
 open Formula
 
 (* step from formula *)
