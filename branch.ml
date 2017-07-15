@@ -1,46 +1,4 @@
-open Step
-
-(* assign each step an initial precedence *)
-let precedence = function
-  | Literal   _ -> 0
-  | DoubleNeg _ -> 1
-  | Alpha     _ -> 2
-  | Beta      _ -> 3
-  | Delta     _ -> 4
-  | Gamma     _ -> 5
-
-(* what happens to precedence on usage? *)
-let use (p, id, step, formula) = (p + 10, id, step, formula)
-
-(* Steps on branch *)
-module Elt = (* TODO: make this = module Step *)
-  struct
-    (* precedence * id * formula itself *)
-    (* TODO: use record *)
-    type t = int * int * Step.t * Formula.t
-
-    (* mutable counter to index formulas *)
-    let count = ref 0
-
-    (* new working formula increases counter *)
-    let create formula =
-      count := !count + 1;
-      let step = step (formula) in
-      precedence step, !count, step, formula
-
-    let apply subst (p, id, step, f) =
-      (p, id, Step.apply subst step, Substitution.apply_formula subst f)
-
-    let to_string (_, _, s, _) = Step.to_string s
-
-    let step (_, _, s, _) = s
-
-    (* min_elt on set will gives lowest precedence and lowest id *)
-    let compare (p1,i1,_,_) (p2,i2,_,_) =
-      match Pervasives.compare p1 p2 with
-      | 0 -> Pervasives.compare i1 i2
-      | x -> x
-  end
+module Elt = StepOnBranch
 
 module Set = Set.Make(Elt)
 
@@ -83,10 +41,11 @@ let peek { steps; _ } =
 
 
 let consume t =
-  let keep top = Set.remove top t.steps |> Set.add (use top) in
+  let keep top = Set.remove top t.steps |> Set.add (Elt.use top) in
   let drop top = Set.remove top t.steps in
   try
     let top = Set.min_elt t.steps in
+    let open Step in
     match Elt.step top with
     | Gamma _   -> {t with steps = keep top}
     | Literal l -> {t with steps = drop top; lit = l::t.lit}
