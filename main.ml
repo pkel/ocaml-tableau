@@ -7,15 +7,15 @@ open Tableau
  *)
 
 let fresh_const name =
-  let f = FunSymb.fresh 0 name in
+  let f = Symbol.fresh name in
   Term.Function (f, [])
 
 let fresh_pred_const name =
-  let p = PredSymb.fresh 0 name in
+  let p = Symbol.fresh name in
   Formula.Predicate (p, [])
 
 let fresh_var name =
-  Term.Variable (VarSymb.fresh name)
+  Term.Variable (Symbol.fresh name)
 
 (*
  * Propositional Logic
@@ -59,13 +59,13 @@ let () =
  * First Order Exam Exercise
  *)
 
-let x = VarSymb.fresh "x"
-let y = VarSymb.fresh "y"
-let z = VarSymb.fresh "z"
-let w = VarSymb.fresh "w"
-let p = PredSymb.fresh 1 "P"
-let q = PredSymb.fresh 1 "Q"
-let r = PredSymb.fresh 1 "R"
+let x = Symbol.fresh "x"
+let y = Symbol.fresh "y"
+let z = Symbol.fresh "z"
+let w = Symbol.fresh "w"
+let p = Symbol.fresh "P"
+let q = Symbol.fresh "Q"
+let r = Symbol.fresh "R"
 let p x = Predicate (p, [Variable x])
 let q x = Predicate (q, [Variable x])
 let r x = Predicate (r, [Variable x])
@@ -87,12 +87,12 @@ let () =
  * Who killed aunt Agatha?
  *)
 
-let const name = Function (FunSymb.fresh  0 name, [])
+let const name = Function (Symbol.fresh name, [])
 let pred1 name =
-  let p = PredSymb.fresh 1 name in
+  let p = Symbol.fresh name in
   fun x   -> Predicate (p, [x])
 let pred2 name =
-  let p = PredSymb.fresh 2 name in
+  let p = Symbol.fresh name in
   fun x y -> Predicate (p, [x; y])
 
 let agatha  = const "agatha"
@@ -104,9 +104,9 @@ let killed = pred2 "killed"
 let richer = pred2 "richer"
 let hates  = pred2 "hates"
 
-let x_ = VarSymb.fresh "x"
+let x_ = Symbol.fresh "x"
 let x  = Variable x_
-let y_ = VarSymb.fresh "y"
+let y_ = Symbol.fresh "y"
 let y  = Variable y_
 
 

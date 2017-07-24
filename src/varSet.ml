@@ -1,4 +1,4 @@
-module VSet = Set.Make(VarSymb)
+module VSet = Set.Make(Symbol)
 
 type t = VSet.t
 

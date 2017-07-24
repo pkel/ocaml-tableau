@@ -3,13 +3,13 @@ type t =
   | DoubleNeg of Formula.t
   | Alpha     of Formula.t * Formula.t
   | Beta      of Formula.t * Formula.t
-  | Gamma     of VarSymb.t * Formula.t
-  | Delta     of VarSymb.t * Formula.t
+  | Gamma     of Symbol.t  * Formula.t
+  | Delta     of Symbol.t  * Formula.t
 
 
 let to_string t =
   let module F = Formula in
-  let module V = VarSymb in
+  let module V = Symbol in
   match t with
   | Literal   l -> F.to_string l
   | DoubleNeg f -> "¬¬" ^ F.to_string f

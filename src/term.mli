@@ -1,11 +1,11 @@
 type t =
-  | Variable of VarSymb.t
-  | Function of FunSymb.t * t list
+  | Variable of Symbol.t
+  | Function of Symbol.t * t list
 
 val to_string : t -> string
 
 (* instaciated = instance var with in *)
-val instance : VarSymb.t -> t -> t -> t
+val instance : Symbol.t -> t -> t -> t
 
 (* free_in_term = free_vars bound term *)
 val free_vars : VarSet.t -> t -> VarSet.t

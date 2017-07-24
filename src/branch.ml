@@ -17,8 +17,8 @@ let shuffle d =
 
 (* literals and formulas separated *)
 type t =
-  { neglit : (PredSymb.t * Term.t list) list
-  ; poslit : (PredSymb.t * Term.t list) list
+  { neglit : (Symbol.t * Term.t list) list
+  ; poslit : (Symbol.t * Term.t list) list
   ; steps : Set.t
   }
 
@@ -90,7 +90,7 @@ let closure newlit t =
   in
   let candidates =
     let f = function
-      | q, qargs when PredSymb.compare p q = 0 -> Some qargs
+      | q, qargs when Symbol.compare p q = 0 -> Some qargs
       | _ -> None
     in
     match neg with

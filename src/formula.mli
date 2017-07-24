@@ -4,10 +4,10 @@ type t =
   | Or        of t   * t
   | Implies   of t   * t
   (* quantified variable, formula *)
-  | Exists    of VarSymb.t * t
-  | ForAll    of VarSymb.t * t
+  | Exists    of Symbol.t * t
+  | ForAll    of Symbol.t * t
   (* predicate, aguments *)
-  | Predicate of PredSymb.t * Term.t list
+  | Predicate of Symbol.t * Term.t list
 
 val free_vars : t -> VarSet.t
 

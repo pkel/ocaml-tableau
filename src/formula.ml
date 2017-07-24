@@ -4,10 +4,10 @@ type t =
   | Or        of t   * t
   | Implies   of t   * t
   (* quantified variable, formula *)
-  | Exists    of VarSymb.t * t
-  | ForAll    of VarSymb.t * t
+  | Exists    of Symbol.t * t
+  | ForAll    of Symbol.t * t
   (* predicate, aguments *)
-  | Predicate of PredSymb.t * Term.t list
+  | Predicate of Symbol.t * Term.t list
 
 let rec to_string = function
   | Not f -> "¬" ^ to_string f ^ ""
@@ -17,14 +17,14 @@ let rec to_string = function
       "(" ^ to_string a ^ " ∨ " ^ to_string b ^ ")"
   | Implies (a,b) ->
       "(" ^ to_string a ^ " → " ^ to_string b ^ ")"
-  | Exists (x, f) -> "∃" ^ VarSymb.to_string x ^ "." ^ to_string f
-  | ForAll (x, f) -> "∀" ^ VarSymb.to_string x ^ "." ^ to_string f
+  | Exists (x, f) -> "∃" ^ Symbol.to_string x ^ "." ^ to_string f
+  | ForAll (x, f) -> "∀" ^ Symbol.to_string x ^ "." ^ to_string f
   | Predicate (p, args) ->
       match List.length args with
-      | 0 -> PredSymb.to_string p
+      | 0 -> Symbol.to_string p
       | _ ->
           let a = List.map Term.to_string args |> String.concat ", " in
-          PredSymb.to_string p ^ "(" ^ a ^ ")"
+          Symbol.to_string p ^ "(" ^ a ^ ")"
 
 let free_vars formula =
   let open VarSet in

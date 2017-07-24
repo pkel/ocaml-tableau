@@ -1,15 +1,15 @@
 type t =
-  | Variable of VarSymb.t
-  | Function of FunSymb.t * t list
+  | Variable of Symbol.t
+  | Function of Symbol.t * t list
 
 let rec to_string = function
-  | Variable x -> VarSymb.to_string x
+  | Variable x -> Symbol.to_string x
   | Function (f, args) ->
       match List.length args with
-      | 0 -> FunSymb.to_string f
+      | 0 -> Symbol.to_string f
       | _ ->
           let a = List.map to_string args |> String.concat ", " in
-          FunSymb.to_string f ^ "(" ^ a ^ ")"
+          Symbol.to_string f ^ "(" ^ a ^ ")"
 
 let instance var term within =
   let rec r = function

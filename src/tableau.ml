@@ -63,7 +63,7 @@ let step t =
               | 0 -> { t with state = Aborted }
               | _ ->
                 (* fresh variable v, x->v, keep gamma *)
-                let fresh = Variable (VarSymb.fresh "") in
+                let fresh = Variable (Symbol.fresh "") in
                 let b = consume hd |> add (instance x fresh f) in
                 { t with stack = b::tl
                 ; power = t.power - 1
@@ -74,8 +74,7 @@ let step t =
               let args = free_vars f |> VarSet.remove x |>
                 VarSet.elements |> List.map (fun x -> Variable x)
               in
-              let n = List.length args in
-              let sk = Function (FunSymb.fresh n "", args) in
+              let sk = Function (Symbol.fresh "", args) in
               let b = consume hd |> add (instance x sk f) in
               { t with stack = b::tl }
           | DoubleNeg a ->

@@ -1,4 +1,4 @@
-module M = Map.Make(VarSymb)
+module M = Map.Make(Symbol)
 
 type t = Term.t M.t
 
@@ -62,12 +62,12 @@ let unifier lst =
         match hd with
         (* unify function by unifying all arguments *)
         | Function (f, fargs) , Function (g, gargs) ->
-            if FunSymb.compare f g = 0 && FunSymb.arity f = FunSymb.arity g
+            if Symbol.compare f g = 0
             then zip fargs gargs |> List.rev_append tl |> r subst
             else raise SymbolClash ;
         (* unify with variable by substitution *)
         | Variable x, Variable y ->
-            if VarSymb.compare x y = 0 then r subst tl
+            if Symbol.compare x y = 0 then r subst tl
             else substitute x (Variable y) tl |>
               r (add x (Variable y) subst)
         | Variable x, term

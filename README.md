@@ -13,7 +13,6 @@ First-order free variable tableau prover
 * ☑ MGU literal closure
 * ☑ More tests on f.o.
 * ☑ Printer
-* ☐ Functor for Var/Pred/Fun Symbols
 * ☐ Functor for (multi)-sets (steps & literals on branch)
 * ☐ Efficient literal-on-branch storage
 * ☐ Parser or infix notation
