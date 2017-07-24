@@ -17,14 +17,17 @@ let shuffle d =
 
 (* literals and formulas separated *)
 type t =
-  { neglit : Formula.t list
-  ; poslit : Formula.t list
+  { neglit : (PredSymb.t * Term.t list) list
+  ; poslit : (PredSymb.t * Term.t list) list
   ; steps : Set.t
   }
 
 
 let print t =
-  let lit = List.concat [t.neglit; t.poslit]
+  let open Formula in
+  let neglit = List.map (fun (p, arg) -> Not (Predicate (p, arg))) t.neglit in
+  let poslit = List.map (fun (p, arg) ->      Predicate (p, arg))  t.poslit in
+  let lit = List.concat [neglit; poslit]
     |> List.map Formula.to_string
     |> String.concat "; "
   in
@@ -56,17 +59,20 @@ let consume t =
         (
           let open Formula in
           match l with
-          | Not (f) -> {t with steps = drop top; neglit = f::t.neglit }
-          |      f  -> {t with steps = drop top; poslit = f::t.poslit }
+          | Not (Predicate (p, args)) ->
+              {t with steps = drop top; neglit = (p, args)::t.neglit }
+          |      Predicate (p, args)  ->
+              {t with steps = drop top; poslit = (p, args)::t.poslit }
+          | _ -> raise (Failure "Predicate expected in literal consumption")
         )
     (* Strict Tableau: Don't use other stuff twice *)
     | _         -> {t with steps = drop top}
   with Not_found -> t
 
 let empty =
-  { poslit=[]
-  ; neglit=[]
-  ; steps=Set.empty }
+  { poslit = []
+  ; neglit = []
+  ; steps = Set.empty }
 
 let singleton f = add f empty
 
@@ -84,7 +90,7 @@ let closure newlit t =
   in
   let candidates =
     let f = function
-      | Predicate (q, qargs) when PredSymb.compare p q = 0 -> Some qargs
+      | q, qargs when PredSymb.compare p q = 0 -> Some qargs
       | _ -> None
     in
     match neg with
@@ -101,9 +107,10 @@ let closure newlit t =
 
 let apply subst t =
   (* TODO: Store substitutions and apply them on peek *)
-  let poslit = List.map (Substitution.apply_formula subst) t.poslit in
-  let neglit = List.map (Substitution.apply_formula subst) t.neglit in
+  let f (p, args) = p, List.map (Substitution.apply_term subst) args in
+  let poslit = List.map f t.poslit in
+  let neglit = List.map f t.neglit in
   let steps = set_map (Elt.apply subst) t.steps in
-  { t with poslit; neglit; steps }
+  { poslit; neglit; steps }
 
 
