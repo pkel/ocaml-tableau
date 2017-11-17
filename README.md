@@ -31,7 +31,7 @@ want to prove something you have to write your formula in an ocaml `.ml`
 file using type constructors and then recompile the project. I did this
 for a trivial example meant for manual execution during an exam and for
 the popular *Who killed aunt Agatha?* problem (look
-[here](src/main.ml)).
+[here](main.ml)).
 
 
 # License
