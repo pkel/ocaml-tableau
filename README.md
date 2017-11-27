@@ -31,7 +31,7 @@ want to prove something you have to write your formula in an ocaml `.ml`
 file using type constructors and then recompile the project. I did this
 for a trivial example meant for manual execution during an exam and for
 the popular [Who killed aunt Agatha?][aga] problem (look
-[here](src/main.ml)). The latter and Thousands other Problems for
+[here](main.ml)). The latter and Thousands other Problems for
 Theorem Provers can be found in the [TPTP Library][tptp].
 
 [tptp]: http://www.cs.miami.edu/~tptp/
@@ -47,7 +47,6 @@ the module on automated reasoning.
 [cl]: http://cl-informatik.uibk.ac.at/
 [th]: http://cl-informatik.uibk.ac.at/teaching/ss17/cl/overview.php
 [pr]: http://cl-informatik.uibk.ac.at/teaching/ss17/autres/content.php
-
 
 # License
 
